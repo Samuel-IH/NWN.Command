@@ -13,8 +13,8 @@ internal class CommandCache
         public MethodInfo method = null!;
         public List<ReflectedArgument> arguments = new();
 
-        private bool? _hasPlayerArgument = null;
-        public bool HasPlayerArgument => _hasPlayerArgument ??= arguments.Any(a => a.isPlayer);
+        private bool? _hasPlayerArgument;
+        internal bool HasPlayerArgument => _hasPlayerArgument ??= arguments.Any(a => a.isPlayer);
         public int ArgumentCount => HasPlayerArgument ? arguments.Count - 1 : arguments.Count;
 
         // ------ help ------ //
@@ -57,8 +57,8 @@ internal class CommandCache
 
             var command = new ReflectedCommand
             {
-                name = attribute.Name,
-                perms = attribute.PermsNeeded,
+                name = attribute.name,
+                perms = attribute.permsNeeded,
                 method = method,
                 arguments = ExtractMethodArgs(paramInfos, method),
             };
