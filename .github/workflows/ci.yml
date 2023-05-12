@@ -6,12 +6,12 @@ name: Continuous Integration
 on:
   push:
     branches:
-      - CI # for now
+      - main
     paths-ignore:
       - '**.md' # <- Good call
   pull_request:
     branches:
-      - CI
+      - main
     paths-ignore:
       - '**.md'
   workflow_dispatch: # for testing, i think?
