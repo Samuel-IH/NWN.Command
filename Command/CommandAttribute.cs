@@ -1,6 +1,9 @@
+using JetBrains.Annotations;
+
 namespace SamuelIH.Nwn.Command;
 
 [AttributeUsage(AttributeTargets.Method)]
+[PublicAPI]
 public class CommandAttribute : Attribute
 {
     public readonly string name;

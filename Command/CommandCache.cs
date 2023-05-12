@@ -14,7 +14,7 @@ internal class CommandCache
         public List<ReflectedArgument> arguments = new();
 
         private bool? _hasPlayerArgument;
-        internal bool HasPlayerArgument => _hasPlayerArgument ??= arguments.Any(a => a.isPlayer);
+        private bool HasPlayerArgument => _hasPlayerArgument ??= arguments.Any(a => a.isPlayer);
         public int ArgumentCount => HasPlayerArgument ? arguments.Count - 1 : arguments.Count;
 
         // ------ help ------ //

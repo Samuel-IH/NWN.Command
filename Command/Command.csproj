@@ -18,6 +18,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="JetBrains.Annotations" Version="2023.2.0-eap3" />
       <PackageReference Include="NWN.Anvil" Version="8193.34.15" />
       <PackageReference Include="NWN.Native" Version="8193.34.4" />
     </ItemGroup>
