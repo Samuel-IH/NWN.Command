@@ -1,0 +1,178 @@
+## Learning CI/CD + GH Actions at this point.
+# This is based off of Jhett's, over here: https://github.com/jhett12321/NWN.HotReload/blob/main/.github/workflows/ci.yml
+
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - CI # for now
+    paths-ignore:
+      - '**.md' # <- Good call
+  pull_request:
+    branches:
+      - CI
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch: # for testing, i think?
+
+jobs:
+  compile:
+    runs-on: ubuntu-20.04
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2 # The bread-and-butter of GH Actions, it seems.
+
+      - name: Check Line Endings
+        uses: erclu/check-crlf@v1 # Haha windows users, despair and suffer!!
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1.9.0
+        with:
+          dotnet-version: '6.0.x' # Can i make this automatic based on the project config?
+
+      - name: Build
+        run: dotnet build --configuration Debug
+
+      - name: Prepare Outputs
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)" # extract the commit sha?
+
+      - name: Code Analysis Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.local/share/JetBrains
+          key: resharper-cache-${{ steps.vars.outputs.sha_short }}
+          restore-keys: |
+            resharper-cache-
+
+      - name: Code Analysis # Is this just a linter? Or a fancy name for the things that Xcode has done automatically for me all these years?
+        run: dotnet tool install -g JetBrains.ReSharper.GlobalTools && jb inspectcode Command.sln -o=results.xml && cat results.xml
+
+      - name: Parse Analysis Results
+        uses: glassechidna/resharper-action@master
+        with:
+          report: results.xml
+
+      - name: Analysis Result # As I understand it, this is a way to fail the build if the analysis fails?
+        run: |
+          ! grep "<Issue TypeId=" results.xml
+  build:
+    runs-on: ubuntu-20.04
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: compile
+    outputs:
+      version: ${{ steps.vars.outputs.version }}
+      tag: ${{ steps.bump_version.outputs.tag }}
+      sha_short: ${{ steps.vars.outputs.sha_short }}
+      image_repository: ${{ steps.vars.outputs.image_repository }}
+      created: ${{ steps.build.outputs.created }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # why don't we have a shallow clone like this for the compile step?
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1.9.0
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Version and Tag
+        id: bump_version
+        uses: anothrNick/github-tag-action@1.39.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          RELEASE_BRANCHES: main
+          WITH_V: true
+
+      - name: Prepare Outputs
+        id: vars
+        run: |
+          echo "::set-output name=version::$(echo ${{ steps.bump_version.outputs.tag }} | sed 's/[v]//g')"
+
+      - name: Build Release Binaries
+        id: build
+        run: |
+          dotnet build --configuration Release -p:Version=${{ steps.vars.outputs.version }}
+          echo "::set-output name=created::$(echo date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+      - name: Upload NuGet Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: NuGet Packages
+          path: |
+            Command/bin/Release/Command/*.nupkg
+            Command/bin/Release/Command/*.snupkg
+          if-no-files-found: error
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Binaries
+          path: |
+            Command/bin/Release/Command/
+            !Command/bin/Release/Command/*.nupkg
+            !Command/bin/Release/Command/*.snupkg
+          if-no-files-found: error
+
+  release:
+    runs-on: ubuntu-20.04
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    needs: build
+    steps:
+      - name: Download Release Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: Binaries
+          path: binaries
+
+      - name: Zip Binaries
+        run: zip -r ../SamuelIH.NWN.Command.zip ./*
+        working-directory: binaries
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_name: Release ${{ needs.build.outputs.version }}
+          draft: false
+          prerelease: false
+          tag_name: ${{ needs.build.outputs.tag }}
+
+      - name: Upload Release Binaries
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./SamuelIH.NWN.Command.zip
+          asset_name: SamuelIH.NWN.Command.zip
+          asset_content_type: application/zip
+
+  nuget:
+    runs-on: ubuntu-20.04
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: build
+    steps:
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1.9.0
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Download Release Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: NuGet Packages
+          path: binaries
+
+#      - name: NuGet Publish
+#        run: dotnet nuget push 'binaries/**/*.nupkg' --api-key ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json
+#
+#      - name: GitHub Publish
+#        run: dotnet nuget push 'binaries/**/*.nupkg' --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/Samuel-IH/index.json
