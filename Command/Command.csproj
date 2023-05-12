@@ -9,6 +9,14 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="NWN.Anvil" Version="8193.34.15" />
       <PackageReference Include="NWN.Native" Version="8193.34.4" />

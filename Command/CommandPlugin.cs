@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Reflection;
+﻿using System.Reflection;
 using Anvil.API;
 using Anvil.Services;
 using NLog;
@@ -12,7 +11,7 @@ public class CommandPlugin
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
     
-    private CommandCache _cache = new();
+    private readonly CommandCache _cache = new();
     
     private bool _isUsingDefaultPerms = true;
     private Func<string[], NwPlayer, PermissionLevel> _getHasPerms = (_, _) => PermissionLevel.Disallowed;
@@ -39,7 +38,7 @@ public class CommandPlugin
         
         if (!_isUsingDefaultPerms)
         {
-            Log.Warn("Permission handler was already customized. The latest handler will be used: {0}", handler.Method.Name);
+            Log.Warn($"Permission handler was already customized. The latest handler will be used: {handler.Method.Name}");
         }
 
         _isUsingDefaultPerms = false;
@@ -51,8 +50,9 @@ public class CommandPlugin
         message = message[1..];
 
         // find the command that this text starts with
+        var searchIn = message;
         var command = _cache.Commands
-            .Where(c => message.StartsWith(c.name))
+            .Where(c => searchIn.StartsWith(c.name))
             .MaxBy(c => c.name.Length);
         
         if (command == null)
