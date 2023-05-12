@@ -1,5 +1,8 @@
+using JetBrains.Annotations;
+
 namespace SamuelIH.Nwn.Command;
 
+[PublicAPI]
 public enum PermissionLevel
 {
     /// <summary>

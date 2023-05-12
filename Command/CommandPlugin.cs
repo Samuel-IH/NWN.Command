@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Anvil.API;
 using Anvil.Services;
+using JetBrains.Annotations;
 using NLog;
 using NWN.Native.API;
 
@@ -27,11 +28,13 @@ public class CommandPlugin
         };
     }
     
+    [PublicAPI]
     public void CacheCommands(Assembly forAssembly)
     {
         _cache.CacheCommands(forAssembly);
     }
     
+    [PublicAPI]
     public void SetPermissionHandler(Func<string[], NwPlayer, PermissionLevel> handler)
     {
         _getHasPerms = handler;
