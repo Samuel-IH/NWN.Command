@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>SamuelIH.Nwn.Command</AssemblyName>
+        <RootNamespace>SamuelIH.Nwn.Command</RootNamespace>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NWN.Anvil" Version="8193.34.15" />
+      <PackageReference Include="NWN.Native" Version="8193.34.4" />
+    </ItemGroup>
+
+</Project>
