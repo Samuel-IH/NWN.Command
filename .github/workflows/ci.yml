@@ -104,8 +104,8 @@ jobs:
         with:
           name: NuGet Packages
           path: |
-            Command/bin/Release/Command/*.nupkg
-            Command/bin/Release/Command/*.snupkg
+            Command/bin/Release/*.nupkg
+            Command/bin/Release/*.snupkg
           if-no-files-found: error
 
       - name: Upload Build Artifacts
@@ -113,9 +113,9 @@ jobs:
         with:
           name: Binaries
           path: |
-            Command/bin/Release/Command/
-            !Command/bin/Release/Command/*.nupkg
-            !Command/bin/Release/Command/*.snupkg
+            Command/bin/Release/
+            !Command/bin/Release/*.nupkg
+            !Command/bin/Release/*.snupkg
           if-no-files-found: error
 
   release:
