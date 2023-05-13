@@ -171,8 +171,5 @@ jobs:
           name: NuGet Packages
           path: binaries
 
-#      - name: NuGet Publish
-#        run: dotnet nuget push 'binaries/**/*.nupkg' --api-key ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json
-#
-#      - name: GitHub Publish
-#        run: dotnet nuget push 'binaries/**/*.nupkg' --api-key ${{ secrets.GITHUB_TOKEN }} --source https://nuget.pkg.github.com/Samuel-IH/index.json
+      - name: NuGet Publish
+        run: dotnet nuget push 'binaries/**/*.nupkg' --api-key ${{ secrets.NUGET_KEY }} --source https://api.nuget.org/v3/index.json

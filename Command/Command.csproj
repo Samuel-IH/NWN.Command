@@ -7,6 +7,13 @@
         <AssemblyName>SamuelIH.Nwn.Command</AssemblyName>
         <RootNamespace>SamuelIH.Nwn.Command</RootNamespace>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>NWN.Command</Title>
+        <Authors>Samuel Hart (Goon2.0)</Authors>
+        <Description>Lightweight command lib for Anvil using reflection.</Description>
+        <Copyright>MIT</Copyright>
+        <PackageProjectUrl>https://github.com/Samuel-IH/NWN.Command</PackageProjectUrl>
+        <PackageLicenseUrl>https://raw.githubusercontent.com/Samuel-IH/NWN.Command/main/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/Samuel-IH/NWN.Command</RepositoryUrl>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
