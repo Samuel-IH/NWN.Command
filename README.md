@@ -1,6 +1,8 @@
 # NWN.Command
 Lightweight command lib for Anvil using reflection
 
+https://www.nuget.org/packages/SamuelIH.Nwn.Command/
+
 ![image](https://github.com/Samuel-IH/NWN.Command/assets/46057508/2597febd-e244-4e30-ada8-c5c6e7c337a8)
 ## Features
 ### Reflection-based command handling
