@@ -30,7 +30,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1.9.0
         with:
-          dotnet-version: '6.0.x' # Can i make this automatic based on the project config?
+          dotnet-version: '7.0.x' # Can i make this automatic based on the project config?
 
       - name: Build
         run: dotnet build --configuration Debug
@@ -77,7 +77,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1.9.0
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '7.0.x'
 
       - name: Version and Tag
         id: bump_version
@@ -163,7 +163,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1.9.0
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '7.0.x'
 
       - name: Download Release Artifacts
         uses: actions/download-artifact@v2
