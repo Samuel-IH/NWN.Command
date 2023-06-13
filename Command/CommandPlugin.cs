@@ -83,10 +83,13 @@ public class CommandPlugin
         // break the message into parts
         var parts = ParseMultipartString(message, new[] { ' ' });
         
-        if (parts.Count != command.ArgumentCount || (parts.Count == 1 && parts[0] == "help"))
+        if (parts.Count != command.ArgumentCount || parts is ["help"])
         {
             var help = $"\nUsage: {command.InvocationHelp}";
             help += "\nArguments:";
+            
+            // In this case, a foreach looks cleaner than a LINQ query
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var argument in command.arguments)
             {
                 if (argument.isPlayer) continue;
