@@ -61,7 +61,10 @@ public class CommandPlugin
         if (command == null)
         {
             message = message.ToLower();
-            var similarCommands = _cache.Commands.Where(c => c.name.StartsWith(message)).ToList();
+            var similarCommands = _cache.Commands
+                .Where(c => c.name.StartsWith(message))
+                .Where(c => _getHasPerms(c.perms, player) != PermissionLevel.Hidden)
+                .ToList();
             if (similarCommands.Count == 0) return false;
             
             SendMonologueToPlayer(player, $"Did you mean:\n  {string.Join("\n  ", similarCommands.Select(c => c.InvocationHelp))}");
