@@ -14,7 +14,7 @@
         <PackageProjectUrl>https://github.com/Samuel-IH/NWN.Command</PackageProjectUrl>
         <PackageLicenseUrl>https://raw.githubusercontent.com/Samuel-IH/NWN.Command/main/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/Samuel-IH/NWN.Command</RepositoryUrl>
-        <Version>36.2.0</Version>
+        <Version>36.2.3</Version>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

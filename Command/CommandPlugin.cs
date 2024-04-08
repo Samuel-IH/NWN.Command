@@ -21,6 +21,16 @@ public class CommandPlugin
     {
         NwModule.Instance.OnChatMessageSend += (eventData) =>
         {
+            var vm = NWNXLib.VirtualMachine();
+            if (vm.m_nRecursionLevel > 6)
+            {
+                Log.Error("Recursion level is dangerously high. Dumping full stack trace:");
+                for (var i = 1; i <= vm.m_nRecursionLevel; i++)
+                {
+                    Log.Error("    " + vm.m_pVirtualMachineScript[i].m_sScriptName);
+                }
+            }
+            
             if (eventData.Sender is not NwCreature creature) return;
             if (creature.ControllingPlayer is not NwPlayer player) return;
 
