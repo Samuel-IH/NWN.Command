@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using Anvil.API;
 using Anvil.Services;
 using JetBrains.Annotations;
@@ -18,22 +17,17 @@ public class CommandPlugin
     private bool _isUsingDefaultPerms = true;
     private Func<string[], NwPlayer, PermissionLevel> _getHasPerms = (_, _) => PermissionLevel.Disallowed;
 
-    public CommandPlugin(EventService eventService)
+    public CommandPlugin()
     {
-        eventService.SubscribeAll<OnChatMessageSend, OnChatMessageSend.Factory>(ChatMessageHandler);
+        NwModule.Instance.OnChatMessageSend += (eventData) =>
+        {
+            if (eventData.Sender is not NwCreature creature) return;
+            if (creature.ControllingPlayer is not NwPlayer player) return;
+
+            eventData.Skip = HandleCommand(eventData.Message, player);
+        };
     }
-
-    private async void ChatMessageHandler(OnChatMessageSend eventData)
-    {
-        if (!(eventData.Message ?? "").StartsWith('/')) return;
-        if (eventData.Sender is not NwCreature creature) return;
-        if (creature.ControllingPlayer is not NwPlayer player) return;
-        eventData.Skip = true;
-
-        await NwTask.NextFrame();
-        HandleCommand(eventData.Message ?? "", player);
-    }
-
+    
     [PublicAPI]
     public void CacheCommands(Assembly forAssembly)
     {
